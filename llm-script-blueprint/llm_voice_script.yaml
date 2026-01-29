@@ -400,8 +400,13 @@ sequence:
       media_type: '{{ media_type }}'
       artist: '{{ artist | default(''NA'', true) }}'
       album: '{{ album | default(''NA'', true) }}'
-      radio_mode: '{{ false if play_continuously == ''Never'' else play_continuously
-        == ''Always'' and media_type != ''radio'' or ''NA'' }}'
+      radio_mode: >-
+        {% set desc = media_description | default('') | lower %}
+        {% if media_type == 'artist' %}
+          {{ 'radio' in desc or 'radioläge' in desc }}
+        {% else %}
+          {{ false if play_continuously == 'Never' else (play_continuously == 'Always' and media_type != 'radio') or 'NA' }}
+        {% endif %}
 - alias: Play music using Music Assistant
   action: music_assistant.play_media
   data: '{{ dict(action_data.items() | rejectattr(''1'', ''eq'', ''NA'')) }}'
