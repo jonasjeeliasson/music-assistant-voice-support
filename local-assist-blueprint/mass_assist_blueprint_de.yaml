@@ -1,9 +1,9 @@
 blueprint:
   domain: automation
   name: Music Assistant - (nur) lokale Sprachsteuerung - Blueprint
-  source_url: https://github.com/music-assistant/voice-support/blob/main/local-assist-blueprint/mass_assist_blueprint_de.yaml
+  source_url: https://github.com/jonasjeeliasson/music-assistant-voice-support/blob/main/local-assist-blueprint/mass_assist_blueprint_de.yaml
   description: '
-    ![Bild](https://github.com/music-assistant/voice-support/blob/main/assets/music-assistant.png?raw=true)
+    ![Bild](https://github.com/jonasjeeliasson/music-assistant-voice-support/blob/main/assets/music-assistant.png?raw=true)
 
     # Medien mit Sprachbefehlen abspielen
 

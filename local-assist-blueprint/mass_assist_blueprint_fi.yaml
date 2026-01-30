@@ -1,8 +1,8 @@
 blueprint:
   domain: automation
   name: Music Assistant - Puheohjaus paikallisella LLM:llä (Soitinparituksella)
-  source_url: https://github.com/music-assistant/voice-support/blob/main/local-assist-blueprint/mass_assist_blueprint_fi.yaml
-  description: ' ![Kuva](https://github.com/music-assistant/voice-support/blob/main/assets/music-assistant.png?raw=true)
+  source_url: https://github.com/jonasjeeliasson/music-assistant-voice-support/blob/main/local-assist-blueprint/mass_assist_blueprint_fi.yaml
+  description: ' ![Kuva](https://github.com/jonasjeeliasson/music-assistant-voice-support/blob/main/assets/music-assistant.png?raw=true)
 
     # Toista mediaa äänikomennoilla
 

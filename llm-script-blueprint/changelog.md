@@ -1,4 +1,4 @@
-![Image](https://github.com/music-assistant/voice-support/blob/main/assets/music-assistant.png?raw=true)
+![Image](https://github.com/jonasjeeliasson/music-assistant-voice-support/blob/main/assets/music-assistant.png?raw=true)
 
 # Changelog: Option 3 - Full LLM Script
 
