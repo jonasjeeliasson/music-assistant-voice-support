@@ -34,12 +34,10 @@ blueprint:
 
     * sedan valfritt följas av ett områdesnamn eller enhetsnamn
 
-    * sedan, för artist, låt, album eller spellista, valfritt följas av frasen
-    `med radioläge` eller bara `radio`
+    * sedan, för artist, låt, album eller spellista, valfritt följas av ordet `radio`
+    eller frasen `med radioläge`
 
     #### Godkända varianter
-
-    användning av artikeln `den/det` är valfri
 
     |Mediatyp|Godkända varianter|
 
@@ -82,7 +80,7 @@ blueprint:
 
     Spela bandet Miss Li radio
 
-    Blanda låtar av Muse.
+    Blanda låtar av Muse
 
     Blanda albumet Classical Nights på sovrummets Sonos-högtalare
 
@@ -120,9 +118,7 @@ blueprint:
               multiline: false
               multiple: true
           default:
-          - (blanda|spela|lyssna på) [](albumet|ep:n|skivan|samlingen|singeln) {media_name}
-            [av [](artisten|bandet|gruppen) {artist}] [(i|på|via) []{area_or_player_name}][
-            (med|via) {radio_mode}]
+          - (blanda|spela|lyssna på) (albumet|ep:n|skivan|samlingen|singeln) {media_name} [av (artisten|bandet|gruppen) {artist}] [(i|på|via) {area_or_player_name}][ (med|via) {radio_mode}]
         track_trigger:
           name: Låt-trigger
           description: Triggermeningarna för att begära en specifik låt.
@@ -131,8 +127,7 @@ blueprint:
               multiline: false
               multiple: true
           default:
-          - (blanda|spela|lyssna på) [](låten|spåret|sången) {media_name} [av [](artisten|bandet|gruppen)
-            {artist}] [(i|på|via) []{area_or_player_name}][ (med|via) {radio_mode}]
+          - (blanda|spela|lyssna på) (låten|spåret|sången) {media_name} [av (artisten|bandet|gruppen) {artist}] [(i|på|via) {area_or_player_name}][ (med|via) {radio_mode}]
         artist_trigger:
           name: Artist-trigger
           description: Triggermeningarna för att begära musik från en specifik artist.
@@ -141,10 +136,7 @@ blueprint:
               multiline: false
               multiple: true
           default:
-          - (blanda|spela|lyssna på) [](artisten|bandet|gruppen) {media_name} [[(med|via) ]{radio_mode}] [(i|på|via)
-            []{area_or_player_name}]
-          - (blanda|spela|lyssna på) [](artisten|bandet|gruppen) {media_name} [(i|på|via)
-            []{area_or_player_name}][ [(med|via) ]{radio_mode}]
+          - (blanda|spela|lyssna på) (artisten|bandet|gruppen) {media_name} [(i|på|via) {area_or_player_name}][ (med|via|) {radio_mode}]
         audiobook_trigger:
           name: Ljudbok-trigger
           description: Triggermeningarna för att begära en ljudbok.
@@ -153,8 +145,7 @@ blueprint:
               multiline: false
               multiple: true
           default:
-          - (spela|lyssna på) [](boken|ljudboken) {media_name} [(i|på|via)
-            []{area_or_player_name}]
+          - (spela|lyssna på) (boken|ljudboken) {media_name} [(i|på|via) {area_or_player_name}]
         radio_trigger:
           name: Radio-trigger
           description: Triggermeningarna för att begära en specifik radiostation.
@@ -163,8 +154,7 @@ blueprint:
               multiline: false
               multiple: true
           default:
-          - (blanda|spela|lyssna på) []((radiostationen)|(radion)|(radiokanalen)) {media_name}
-            [(i|på|via) []{area_or_player_name}]
+          - (blanda|spela|lyssna på) (radiostationen|radion|radiokanalen) {media_name} [(i|på|via) {area_or_player_name}]
         playlist_trigger:
           name: Spellista-trigger
           description: Triggermeningarna för att begära en specifik spellista.
@@ -173,8 +163,7 @@ blueprint:
               multiline: false
               multiple: true
           default:
-          - (blanda|spela|lyssna på) []spellistan {media_name} [(i|på|via) []{area_or_player_name}][
-            (med|via) {radio_mode}]
+          - (blanda|spela|lyssna på) spellistan {media_name} [(i|på|via) {area_or_player_name}][ (med|via) {radio_mode}]
         response_input:
           name: Svar för Assist
           description: Svaret som Assist kommer att ge.
@@ -182,9 +171,7 @@ blueprint:
             text:
               multiline: false
               multiple: false
-          default: '{{ ''Blandar'' if ''blanda'' in trigger.sentence | lower  else ''''}} {{ trigger.slots.media_name }} 
-            {{ '''' if ''blanda'' in trigger.sentence | lower else ''spelas''}} på {{ mass_player_name
-            }}'
+          default: '{{ ''Blandar'' if ''blanda'' in trigger.sentence | lower else ''''}} {{ trigger.slots.media_name }} {{ '''' if ''blanda'' in trigger.sentence | lower else ''spelas''}} på {{ mass_player_name }}'
 triggers:
 - trigger: conversation
   command: !input album_trigger
@@ -215,27 +202,15 @@ actions:
     assist_device_id: '{{ trigger.device_id }}'
     action_data:
       media_id: '{{ trigger.slots.media_name }}'
-      media_type: '{{ ''radio'' if ''radio'' in media_name | lower else trigger_id
-        }}'
+      media_type: '{{ ''radio'' if ''radio'' in media_name | lower else trigger_id }}'
       artist: '{{ trigger.slots.artist | default }}'
       radio_mode: '{{ ''radio'' in trigger.slots.radio_mode | default | lower }}'
-    ma_players: '{{  integration_entities(''music_assistant'') | select(''match'', ''media_player'') | list }}'
-    player_entity_id_by_player_name: "{{ ma_players |
-      expand \n  | selectattr('name', 'match', area_or_player_name ~ '$', ignorecase=true)\n
-      \ | map(attribute='entity_id') | list }}\n"
-    player_entity_id_by_area_name: '{{ areas() | map(''area_name'') | select(''match'',
-      area_or_player_name ~ ''$'',  ignorecase=true) | map(''area_entities'') | sum(start=[])
-      | select(''in'',  ma_players) | list }}
-
-      '
-    player_entity_id_by_assist_area: '{{ area_entities(area_id(trigger.device_id))
-      | select(''in'', ma_players) | list }}
-
-      '
-    mass_player_entity_id: "{{ player_entity_id_by_player_name or player_entity_id_by_area_name
-      \nor player_entity_id_by_assist_area or [default_player_entity_id] }}\n"
-    mass_player_name: '{{ mass_player_entity_id | map(''state_attr'', ''friendly_name'')
-      | join('', '') }}'
+    ma_players: '{{ integration_entities(''music_assistant'') | select(''match'', ''media_player'') | list }}'
+    player_entity_id_by_player_name: "{{ ma_players | expand | selectattr('name', 'match', area_or_player_name ~ '$', ignorecase=true) | map(attribute='entity_id') | list }}"
+    player_entity_id_by_area_name: '{{ areas() | map(''area_name'') | select(''match'', area_or_player_name ~ ''$'', ignorecase=true) | map(''area_entities'') | sum(start=[]) | select(''in'', ma_players) | list }}'
+    player_entity_id_by_assist_area: '{{ area_entities(area_id(trigger.device_id)) | select(''in'', ma_players) | list }}'
+    mass_player_entity_id: "{{ player_entity_id_by_player_name or player_entity_id_by_area_name or player_entity_id_by_assist_area or [default_player_entity_id] }}"
+    mass_player_name: '{{ mass_player_entity_id | map(''state_attr'', ''friendly_name'') | join('', '') }}'
 - alias: Skicka media till vald Music Assistant-spelare
   action: music_assistant.play_media
   data: '{{ dict(action_data.items() | selectattr(''1'')) }}'
