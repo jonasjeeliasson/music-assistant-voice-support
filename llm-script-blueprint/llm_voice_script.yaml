@@ -148,7 +148,11 @@ blueprint:
 
             - "playlist" if the search specifically requests a playlist.
 
-            - "radio" if the search is a radio channel.
+            - "radio" ONLY if the request explicitly mentions "radiostation", "radio station",
+            or "radiokanal". Do NOT use "radio" when phrases like "som radio", "via radio",
+            "med radio", or "as radio" appear - these indicate a playback mode, not a radio
+            station. For example "Play music by Artist som radio" should use media_type "artist",
+            not "radio".
 
             media_type is mandatory and must always be provided. If a request does
             not match any of these types, for example when music from a specific genre
