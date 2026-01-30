@@ -1,0 +1,252 @@
+blueprint:
+  domain: automation
+  name: Music Assistant - Local(only) Voice Support Blueprint (Svenska)
+  source_url: https://github.com/music-assistant/voice-support/blob/main/local-assist-blueprint/mass_assist_blueprint_en.yaml
+  description: ' ![Image](https://github.com/music-assistant/voice-support/blob/main/assets/music-assistant.png?raw=true)
+
+    # Spela media med röstkommandon
+
+    ### Blueprint-inställningar
+
+    #### Obligatoriskt
+
+    * Ange en `Standardspelare` som ska användas när inget mål nämns i förfrågan
+    och förfrågan inte kommer från ett område med en Music Assistant-spelare.
+
+    #### Valfritt
+
+    * Ändra triggermeningar eller lägg till fler, du kan också använda detta för att översätta
+    meningarna till ditt eget språk.
+
+    * Ändra svaren eller översätt dem till ditt eget språk.
+
+
+    ### Användning
+
+    Alla meningar måste:
+
+    * börja med orden `Blanda`, `Spela` eller `Lyssna på` följt av objekttypen `artist`/`låt`/`album`/`spellista`/`radio`
+    och sedan namnet på objektet. Om meningen börjar med `Blanda` kommer spelaren som spelar förfrågan också att ha blandningsfunktionen
+    aktiverad, annars stängs den av.
+
+    * för album och låt valfritt följas av `av [artisten]` och sedan
+    artistnamnet
+
+    * sedan valfritt följas av ett områdesnamn eller enhetsnamn
+
+    * sedan, för artist, låt, album eller spellista, valfritt följas av frasen
+    `med radioläge` eller bara `radio`
+
+    #### Godkända varianter
+
+    användning av artikeln `den/det` är valfri
+
+    |Mediatyp|Godkända varianter|
+
+    |---|---|
+
+    |`artist`|`band`, `grupp`|
+
+    |`låt`|`spår`, `sång`|
+
+    |`radio`|`radiostation`, `radiokanal`|
+
+    |`spellista`||
+
+
+    #### Exempel
+
+    ```
+
+    Spela artisten Pink Floyd i köket
+
+    Lyssna på albumet Jagged Little Pill i arbetsrummet
+
+    Lyssna på albumet Greatest Hits av artisten James Taylor i köket
+
+    Spela låten New Years Day i sovrummet
+
+    Spela låten New Years Day i sovrummet med radioläge
+
+    Spela sången A Hard Days Night av Billy Joel i sovrummet
+
+    Lyssna på spellistan Classic Rock i arbetsrummet
+
+    Lyssna på radiostationen BBC Radio 1 i sovrummet
+
+    Spela albumet Classical Nights på sovrummets Sonos-högtalare
+
+    Lyssna på skivan Classical Nights på sovrummets Sonos-högtalare
+
+    Spela bandet U2
+
+    Spela bandet Miss Li radio
+
+    Blanda låtar av Muse.
+
+    Blanda albumet Classical Nights på sovrummets Sonos-högtalare
+
+    Spela ljudboken Roadside Picnic
+
+    ```'
+  input:
+    default_player_entity_id_input:
+      name: Standardmediaspelare
+      selector:
+        entity:
+          filter:
+          - integration: music_assistant
+            domain:
+            - media_player
+          multiple: false
+    trigger_response_settings:
+      name: Trigger- och svarsinställningar för Assist
+      icon: mdi:chat
+      description: 'Du kan ändra befintliga triggers eller lägga till fler triggers i dessa
+        inställningar. Sätt text inom hakparenteser [ ] för att göra den valfri. Med runda
+        parenteser ( ) och ett vertikalstreck | kan du ange flera värden som behandlas
+        som "eller". { query } är ett jokervärde som kommer att innehålla den begärda
+        median och eventuellt området eller Music Assistant-spelaren.
+
+        Du kan också ställa in svaren som Assist ger. Det använder jinja-mallar som
+        ersätts med mediainformation och spelarnamn för Music Assistant-spelaren.'
+      collapsed: true
+      input:
+        album_trigger:
+          name: Album-trigger
+          description: Triggermeningarna för att begära ett specifikt album.
+          selector:
+            text:
+              multiline: false
+              multiple: true
+          default:
+          - (blanda|spela|lyssna på) [](albumet|ep:n|skivan|samlingen|singeln) {media_name}
+            [av [](artisten|bandet|gruppen) {artist}] [(i|på|via) []{area_or_player_name}][
+            (med|via) {radio_mode}]
+        track_trigger:
+          name: Låt-trigger
+          description: Triggermeningarna för att begära en specifik låt.
+          selector:
+            text:
+              multiline: false
+              multiple: true
+          default:
+          - (blanda|spela|lyssna på) [](låten|spåret|sången) {media_name} [av [](artisten|bandet|gruppen)
+            {artist}] [(i|på|via) []{area_or_player_name}][ (med|via) {radio_mode}]
+        artist_trigger:
+          name: Artist-trigger
+          description: Triggermeningarna för att begära musik från en specifik artist.
+          selector:
+            text:
+              multiline: false
+              multiple: true
+          default:
+          - (blanda|spela|lyssna på) [](artisten|bandet|gruppen) {media_name} [[(med|via) ]{radio_mode}] [(i|på|via)
+            []{area_or_player_name}]
+          - (blanda|spela|lyssna på) [](artisten|bandet|gruppen) {media_name} [(i|på|via)
+            []{area_or_player_name}][ [(med|via) ]{radio_mode}]
+        audiobook_trigger:
+          name: Ljudbok-trigger
+          description: Triggermeningarna för att begära en ljudbok.
+          selector:
+            text:
+              multiline: false
+              multiple: true
+          default:
+          - (spela|lyssna på) [](boken|ljudboken) {media_name} [(i|på|via)
+            []{area_or_player_name}]
+        radio_trigger:
+          name: Radio-trigger
+          description: Triggermeningarna för att begära en specifik radiostation.
+          selector:
+            text:
+              multiline: false
+              multiple: true
+          default:
+          - (blanda|spela|lyssna på) []((radiostationen)|(radion)|(radiokanalen)) {media_name}
+            [(i|på|via) []{area_or_player_name}]
+        playlist_trigger:
+          name: Spellista-trigger
+          description: Triggermeningarna för att begära en specifik spellista.
+          selector:
+            text:
+              multiline: false
+              multiple: true
+          default:
+          - (blanda|spela|lyssna på) []spellistan {media_name} [(i|på|via) []{area_or_player_name}][
+            (med|via) {radio_mode}]
+        response_input:
+          name: Svar för Assist
+          description: Svaret som Assist kommer att ge.
+          selector:
+            text:
+              multiline: false
+              multiple: false
+          default: '{{ ''Blandar'' if ''blanda'' in trigger.sentence | lower  else ''''}} {{ trigger.slots.media_name }} 
+            {{ '''' if ''blanda'' in trigger.sentence | lower else ''spelas''}} på {{ mass_player_name
+            }}'
+triggers:
+- trigger: conversation
+  command: !input album_trigger
+  id: album
+- trigger: conversation
+  command: !input track_trigger
+  id: track
+- trigger: conversation
+  command: !input artist_trigger
+  id: artist
+- trigger: conversation
+  command: !input audiobook_trigger
+  id: audiobook
+- trigger: conversation
+  command: !input radio_trigger
+  id: radio
+- trigger: conversation
+  command: !input playlist_trigger
+  id: playlist
+actions:
+- alias: Definiera variabler som ska användas i automationen
+  variables:
+    version: 20250404
+    shuffle: '{{ ''blanda'' in trigger.sentence | lower }}'
+    default_player_entity_id: !input default_player_entity_id_input
+    trigger_id: '{{ trigger.id }}'
+    area_or_player_name: '{{ trigger.slots.area_or_player_name | default }}'
+    assist_device_id: '{{ trigger.device_id }}'
+    action_data:
+      media_id: '{{ trigger.slots.media_name }}'
+      media_type: '{{ ''radio'' if ''radio'' in media_name | lower else trigger_id
+        }}'
+      artist: '{{ trigger.slots.artist | default }}'
+      radio_mode: '{{ ''radio'' in trigger.slots.radio_mode | default | lower }}'
+    ma_players: '{{  integration_entities(''music_assistant'') | select(''match'', ''media_player'') | list }}'
+    player_entity_id_by_player_name: "{{ ma_players |
+      expand \n  | selectattr('name', 'match', area_or_player_name ~ '$', ignorecase=true)\n
+      \ | map(attribute='entity_id') | list }}\n"
+    player_entity_id_by_area_name: '{{ areas() | map(''area_name'') | select(''match'',
+      area_or_player_name ~ ''$'',  ignorecase=true) | map(''area_entities'') | sum(start=[])
+      | select(''in'',  ma_players) | list }}
+
+      '
+    player_entity_id_by_assist_area: '{{ area_entities(area_id(trigger.device_id))
+      | select(''in'', ma_players) | list }}
+
+      '
+    mass_player_entity_id: "{{ player_entity_id_by_player_name or player_entity_id_by_area_name
+      \nor player_entity_id_by_assist_area or [default_player_entity_id] }}\n"
+    mass_player_name: '{{ mass_player_entity_id | map(''state_attr'', ''friendly_name'')
+      | join('', '') }}'
+- alias: Skicka media till vald Music Assistant-spelare
+  action: music_assistant.play_media
+  data: '{{ dict(action_data.items() | selectattr(''1'')) }}'
+  target:
+    entity_id: '{{ mass_player_entity_id }}'
+- alias: Aktivera/inaktivera blandning på en Music Assistant-mediaspelare
+  action: media_player.shuffle_set
+  data:
+    shuffle: '{{ shuffle }}'
+  target:
+    entity_id: '{{ mass_player_entity_id }}'
+- alias: Skicka tillbaka svaret
+  set_conversation_response: !input response_input
+mode: single
